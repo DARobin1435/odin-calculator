@@ -78,18 +78,21 @@ function newListeners(ele){
                 currentValues = [];
                 operatorSelected = true;
             }
-            if (operatorSelected){
-                updateDisplay(operate(num1, num2, operator));
-            }
+            // if (operatorSelected){
+            //     updateDisplay(operate(num1, num2, operator));
+            // }
         })
     }
 
     if(ele.textContent == "="){
         ele.addEventListener("click", e => {
+            alert(`Performing operation: ${num1} ${operator} ${num2}`)
             updateDisplay(operate(num1, num2, operator));
 
         })
+        
     }
+
     if(ele.textContent == "clear"){
         ele.addEventListener("click", e => {
             clear();
@@ -121,11 +124,6 @@ function makeCalculator(){
         newDiv.classList.add("buttons");
         newDiv.textContent = btn;
         newListeners(newDiv);
-        newDiv.addEventListener("click", (e) => {
-            if (newDiv.textContent == "+"){
-                alert(e.target.textContent)
-            }
-        })
         buttonContainer.appendChild(newDiv);
     })
 
