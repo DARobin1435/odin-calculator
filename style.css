@@ -1,0 +1,69 @@
+.container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding:0;
+}
+
+.title{
+
+    font-size: 2rem;
+    margin: 30px;
+}
+.calculator-container{
+
+    padding: 0;
+}
+.display-container{
+
+    display: flex;
+    flex-flow: column;
+    border: 1px solid gray;
+    padding: 40px 140px;
+    margin: 20px;
+    
+}
+.display-top-row{
+
+    display: flex;
+    margin: 5px;
+
+}
+.condensed{
+
+    font-size:13px;
+    font-weight: 700;
+
+}
+.spacer{
+
+    margin: 5px;
+
+}
+.display-container>input{
+
+    font-size: 20px;
+
+}
+.button-container{
+
+    display: flex;
+    justify-content: center;
+    flex-flow: wrap;
+    width: 300px;
+
+}
+.buttons{
+
+    background-color: lightblue;
+    box-shadow: 4px 4px 15px gray;
+    padding: 20px;
+    text-align: center;
+    width: 50px;
+
+}
+.highlighted{
+
+    background-color: coral;
+
+}
