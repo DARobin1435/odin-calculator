@@ -1,148 +1,149 @@
-const display = document.querySelector('.display-container>input');
-const calcContainer = document.querySelector('.button-container');
+const buttonContainer = document.querySelector('.button-container');
+const display = document.querySelector('.display-container > input');
 
-// Small values
-const condFirstValue = document.querySelector(".condensed.first-value");
-const condOperator = document.querySelector(".condensed.operator");
-const condSecondValue = document.querySelector(".condensed.second-value");
-
+// An array for values more than one digit
 let currentValues = [];
-const operationValues = [];
 
-let tempValue = null;
+let num1 = 0;
+let num2 = 0;
 let operator = null;
-let result = 0;
+let operatorSelected = false;
 
-// Functions for operations
+
 function add(a,b){
-    return a + b;
+    return a+b;
 }
 function subtract(a,b){
-    return a - b;
+    return a-b;
 }
 function multiply(a,b){
-    return a * b;
+    return a*b;
 }
 function divide(a,b){
-    return a / b;
+    return a/b;
 }
 
+function operate(a,b,op){
 
-function changeDisplay(n=null){
-    if (n){
-        display.value = n;
-        return;
-    }
-    display.value = parseInt(currentValues.join(""),10); 
-    tempValue = display.value;
-
-}
-
-function updateMiniDisplay(){
-    
-    if (operationValues.length < 2){
-        if (!operationValues[1]){
-            condSecondValue.innerText = "";
-        }else{
-            condSecondValue.innerText = operationValues[1];
-        }
-        condFirstValue.innerText = operationValues[0];
-        
-        condOperator.innerText = operator;
-
-    }
-}
-
-// Build calculator function
-function makeCalc(){
-
-    const buttonValues = ["+", "-", "*", "/", "=", "clear"];
-    let newDiv = null;
-    // Make numerals and add them to buttonValues array
-    for (let i = 0; i <= 9; i++){
-        buttonValues.unshift(i);
-    }
-    // Make operators
-    buttonValues.forEach(item=>{
-
-        newDiv = document.createElement('div');
-        newDiv.textContent = item;
-        newDiv.classList.add("buttons");
-        newDiv.addEventListener("mouseover", (e)=>{
-            e.target.classList.add("highlighted");
-        })
-        newDiv.addEventListener("mouseout", (e)=>{
-            e.target.classList.remove("highlighted");
-        })
-        newDiv.addEventListener("click", (e)=>{
-            currentValues.push(e.target.textContent);
-            if (!isNaN(item)){
-                // changeDisplay();
-            }    
-            })
-        if (item == "+" || item =="-" || item == "*" ||
-        item == "/"){
-            newDiv.addEventListener("click",e=>{
-
-                if (operationValues.length < 2){
-
-                    operationValues.push(tempValue); 
-                    currentValues = [];
-                    operator = e.target.textContent;
-                    
-                }else{
-                
-                    result = operate(operationValues[0], operationValues[1], e.target.textContent);
-                  
-                }
-                
-        })
-        }
-        if (item == "="){
-            
-            newDiv.addEventListener("click", (e)=>{
-                result = operate(operationValues[0], operationValues[1], operator);
-                console.log(`Values: ${operationValues[0]} || ${operationValues[1]}`);
-                displayValue.value = result;
-            })
-
-        }
-        // Remove values in array and operators
-        if (item == "clear"){
-            newDiv.addEventListener("click", () =>{
-                clearValues();
-            })
-        }
-        calcContainer.appendChild(newDiv);
-
-    })
-}
-function operate(val1, val2, op){
-    val1 = parseInt(val1, 10);
-    val2 = parseInt(val2, 10);
     switch (op){
         case "+":
-            return add(val1, val2);
+            return add(a,b);
         case "-":
-            return subtract(val1, val2);
+            return subtract(a,b);
         case "*":
-            return multiply(val1, val2);
+            return multiply(a,b);
         case "/":
-            return divide(val1, val2);
+            return divide(a,b);
     }
 }
-function clearValues(){
 
-    currentValues = [];
-    displayValue.value = null;
-    operationValues[0] = null;
-    operationValues[1] = null;
-    tempValue = 0;
-    result = 0;
+function updateDisplay(val){
+    display.value = val;
+}
+
+// collapses the values in the array into a single base-10 number
+function collapseValues(arr){
+
+    return  parseInt(arr.join(""),10);
 
 }
-// Event listeners
 
 
-// Function calls
-makeCalc();
+// Listeners for divs
+function newListeners(ele){
+
+    if (!isNaN(ele.textContent)){
+        // Reacts to numbers being pressed
+        ele.addEventListener("click", e => {
+            
+            if (!operator){
+                currentValues.push(e.target.textContent);
+                num1 = collapseValues(currentValues);
+                updateDisplay(num1);
+                // alert(`Alerted num1: ${num1} of type ${typeof num1}`);
+            }else {
+                currentValues.push(e.target.textContent);
+                num2 = collapseValues(currentValues);
+                updateDisplay(num2);
+                // alert(`Alerted num2: ${num2} of type ${typeof num2}`);
+            }
+        })
+    }
+    if(ele.textContent == "+" || ele.textContent == "-" || ele.textContent == "*" ||
+    ele.textContent == "/" ){
+        ele.addEventListener("click", (e) =>{
+            // Sets operator if no operator is already selected
+            if (!operator){ 
+                operator = e.target.textContent;
+                currentValues = [];
+                operatorSelected = true;
+            }
+            if (operatorSelected){
+                updateDisplay(operate(num1, num2, operator));
+            }
+        })
+    }
+
+    if(ele.textContent == "="){
+        ele.addEventListener("click", e => {
+            updateDisplay(operate(num1, num2, operator));
+
+        })
+    }
+    if(ele.textContent == "clear"){
+        ele.addEventListener("click", e => {
+            clear();
+        })
+    }
+    
+    ele.addEventListener("mouseover", (e) => {
+        e.target.classList.add("highlighted");
+    })
+    ele.addEventListener("mouseout", (e) => {
+        e.target.classList.remove("highlighted");
+    })
+
+}
+
+
+function makeCalculator(){
+
+    const buttonValues = ["+", "-","*","/","=", "clear"];
+    let newDiv;
+    // add numerals to start
+    for (let i=0;i<=9;i++){
+        buttonValues.unshift(i);
+    }
+    // Add all buttons
+    buttonValues.forEach(btn => {
+
+        newDiv = document.createElement('div');
+        newDiv.classList.add("buttons");
+        newDiv.textContent = btn;
+        newListeners(newDiv);
+        newDiv.addEventListener("click", (e) => {
+            if (newDiv.textContent == "+"){
+                alert(e.target.textContent)
+            }
+        })
+        buttonContainer.appendChild(newDiv);
+    })
+
+    
+}
+
+function clear(){
+
+    num1 = 0;
+    num2 = 0;
+    operator = null;
+    updateDisplay(0);
+    currentValues = [];
+
+
+}
+
+// 
+
+// Run the calculator
+makeCalculator()
